@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import BDBOAuth1Manager
 
 class ViewController: UIViewController {
 
@@ -20,6 +21,19 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    //Method for login
+    @IBAction func onLogin(sender: AnyObject) {
+        //If the login is success, then go the tweetView, else login again
+        TwitterClient.sharedInstance.loginWithCompletion() {
+            (user: User?, error: NSError?) in
+            if user != nil {
+                self.performSegueWithIdentifier("loginSegue", sender: self)
+                //for performing a segue
+            } else {
+                //error
+            }
+        }
+    }
 
 }
 
