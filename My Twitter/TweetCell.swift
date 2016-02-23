@@ -15,6 +15,13 @@ class TweetCell: UITableViewCell {
     @IBOutlet weak var handleLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var tweetLabel: UILabel!
+    @IBOutlet weak var likesLabel: UILabel!
+    
+    //Instance variables
+    var tweet_id: String!
+    
+    //Buttons
+    @IBOutlet weak var reTweetButton: UIButton!
     
     var tweet: Tweet! {
         didSet {
@@ -22,6 +29,8 @@ class TweetCell: UITableViewCell {
             tweetLabel.text = tweet.text
             handleLabel.text = "@\((tweet.user?.screenname)!)"
             timeLabel.text = "\(tweet.createdAt!)"
+            likesLabel.text = tweet.likesCount
+            tweet_id = tweet.tweetId
             
             let imageUrl = tweet.user?.profileImageUrl!
             imageProfile.setImageWithURL(NSURL(string: imageUrl!)!)
@@ -40,4 +49,10 @@ class TweetCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+    @IBAction func onReTweet(sender: AnyObject) {
+        TwitterClient.sharedInstance.retweet(tweet_id)
+        reTweetButton.setImage(UIImage(named: "retweet-action-on-green"), forState: UIControlState.Normal)
+
+    }
+    
 }

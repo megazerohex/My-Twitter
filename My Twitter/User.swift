@@ -16,19 +16,31 @@ let userDidLogoutNotification = "userDidLogoutNotification"
 class User: NSObject {
     //instance variables for storing the data of the profile user
     var name: String?
+    var user_id: String?
     var screenname: String?
     var profileImageUrl: String?
     var tagline: String?
     var dictionary: NSDictionary
+    
+    //For the profile
+    var tweetsCount: String?
+    var followerCount: Int?
+    var followingCount: Int?
     
     //constructor of the class
     init(dictionary: NSDictionary) {
         self.dictionary = dictionary
         
         name = dictionary["name"] as? String
+        user_id = (dictionary["id_str"] as? String?)!
         screenname = dictionary["screen_name"] as? String
         profileImageUrl = dictionary["profile_image_url"] as? String
         tagline = dictionary["description"] as? String
+        
+        //for the profile
+        tweetsCount = "\((dictionary["statuses_count"])!)"
+        followerCount = dictionary["followers_count"] as! Int?
+        followingCount = dictionary["friends_count"] as! Int?
     }
     
     //For getting if there is a current account login or not

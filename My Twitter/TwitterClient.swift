@@ -14,6 +14,7 @@ let twitterConsumerSecret = "X3wGz4sExjYgLRnc09cUgSJu1SQYtbGODFrDOLwvCEUccJ4N9N"
 let twitterBaseUrl = NSURL(string: "https://api.twitter.com")
 
 class TwitterClient: BDBOAuth1SessionManager {
+    
     var loginCompletion: ((user: User?, error: NSError?) -> ())?
     
     class var sharedInstance: TwitterClient {
@@ -77,6 +78,13 @@ class TwitterClient: BDBOAuth1SessionManager {
         }
     }
     
+    /*
+    *
+    *
+    *    THESE ARE METHODS FOR GETTING INFO FROM TWITTER!!!
+    *
+    */
+    
     //Method for accessing the home timeline dictionary
     func homeTimelineWithParams(params: NSDictionary?, completion: (tweet: [Tweet]?, error: NSError?)-> ()) {
         GET("1.1/statuses/home_timeline.json", parameters: params,
@@ -94,6 +102,70 @@ class TwitterClient: BDBOAuth1SessionManager {
                 self.loginCompletion!(user: nil, error: error)
         })
         
+    }
+    
+    func userTimeline(screenname: String, completion: (tweet: [Tweet]?, error: NSError?)-> ()) {
+        GET("1.1/statuses/user_timeline.json?screen_name=\(screenname)", parameters: nil,
+            success: { (operation: NSURLSessionDataTask?, response: AnyObject?) -> Void in
+                var tweets = Tweet.tweetsWithArray(response as! [NSDictionary])
+                completion(tweet: tweets, error: nil)
+            },
+            
+            failure: { (operation: NSURLSessionDataTask?, error: NSError!) -> Void in
+                print("Error retrieving info: \(error)")
+                
+                completion(tweet: nil, error: error)
+                self.loginCompletion!(user: nil, error: error)
+        })
+        
+    }
+    
+    /*
+    *
+    *
+    *    THESE ARE METHODS FOR POSTING IN TWITTER!!!
+    *
+    */
+    
+    func tweet(tweetText: String) {
+        let escapedText = (tweetText.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding))!
+        POST("1.1/statuses/update.json?status=\(escapedText)", parameters: nil,
+            success: { (operation: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                print("You tweeted!!")
+            }, failure: { (operation: NSURLSessionDataTask?, error: NSError) -> Void in
+                print("Reply error:\(error)")
+        })
+        
+    }
+    
+    func retweet(id: String) {
+        POST("1.1/statuses/retweet/\(id).json", parameters: nil,
+            success: {(operation: NSURLSessionDataTask!, response: AnyObject?) -> Void in
+                print ("rt")
+            }, failure: { (operation: NSURLSessionDataTask?, error: NSError!) -> Void in
+                print("RT error: \(error)")
+        })
+    }
+    
+    func reply(tweetId: String, tweetText: String) {
+        let escapedText = (tweetText.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding))!
+        print("1.1/statuses/update.json?status=\(escapedText)&in_reply_to_status_id=\(tweetId)")
+        POST("1.1/statuses/update.json?status=\(escapedText)&in_reply_to_status_id=\(tweetId)", parameters: nil,
+            success: { (operation: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                print("replied")
+            }, failure: { (operation: NSURLSessionDataTask?, error: NSError) -> Void in
+                print("Reply error:\(error)")
+        })
+        
+    }
+    
+    func favorite(id: String) {
+        POST("1.1/favorites/create.json?id=\(id)", parameters: nil,
+            success: { (operation: NSURLSessionDataTask, response: AnyObject?) -> Void in
+                print("successful fav")
+            }) { (opreation: NSURLSessionDataTask?, error: NSError) -> Void in
+                print("Fav error: \(error)")
+        }
     }
 
 }

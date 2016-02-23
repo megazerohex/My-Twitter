@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //This means that there is already a user, so the login page wont appear
         if User.currentUser != nil {
             print("There's a user logged in")
-            let vc = storyboard.instantiateViewControllerWithIdentifier("TweetsViewController") as UIViewController
+            let vc = storyboard.instantiateViewControllerWithIdentifier("TweetNavigationController") as! UINavigationController
             
             window?.rootViewController = vc
         }

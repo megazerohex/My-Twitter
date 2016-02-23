@@ -73,14 +73,61 @@ class TweetsViewController: UIViewController, UITableViewDataSource, UITableView
         User.currentUser?.logout()
     }
 
-    /*
-    // MARK: - Navigation
-
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        
+        if segue.identifier == "replySegue" {
+            print("started replying")
+            let button = sender as! UIButton
+            let buttonFrame = button.convertRect(button.bounds, toView: self.tableView)
+            if let indexPath = self.tableView.indexPathForRowAtPoint(buttonFrame.origin) {
+                let navigationController = segue.destinationViewController as! UINavigationController
+                let createController = navigationController.topViewController as! CreateViewController
+                
+                let selectedRow = indexPath.row as NSInteger
+                
+                let tweet = tweets![selectedRow]
+                let replyHandle  = "@\((tweet.user?.screenname!)!) " as String
+                
+                createController.tweetId = (tweet.tweetId!)
+                createController.replyTo = replyHandle
+                createController.isReply = true
+            }
+        }
+        
+        if segue.identifier == "profileSegue" {
+            let button = sender as! UIButton
+            let buttonFrame = button.convertRect(button.bounds, toView: self.tableView)
+            if let indexPath = self.tableView.indexPathForRowAtPoint(buttonFrame.origin) {
+                let profileController = segue.destinationViewController as! ProfileViewController
+                
+                let selectedRow = indexPath.row as NSInteger
+                
+                profileController.tweets = tweets
+                profileController.index = selectedRow
+                
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }
+        }
+        
+        if segue.identifier == "detailControllerSegue" {
+            let cell = sender as! UITableViewCell
+            if let indexPath = tableView.indexPathForCell(cell) {
+                
+                let detailController = segue.destinationViewController as! DetailsViewController
+                
+                let selectedRow = indexPath.row as NSInteger
+                
+                detailController.tweets = tweets
+                detailController.index = selectedRow
+                
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }
+        }
+        
     }
-    */
+
 
 }
